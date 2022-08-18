@@ -33,7 +33,7 @@ def save_coco(file, info, images, annotations, categories):
         annotation['image_id']=0
 
     with open(file, 'wt', encoding='UTF-8') as coco:
-        json.dump({ 'info': info, 'categories': categories, 'images': images, 
+        json.dump({ 'info': info, 'categories': categories, 'images': [images], 
             'annotations': annotations}, coco, indent=2, sort_keys=False)
 
 def filter_annotations(annotations, images):

@@ -88,6 +88,7 @@ def run(annotations_path, split_save_folder):
 
         for category in categories:
             name=category['name']
+            
             name_index=lsit_main_class.index(str(name))
             category['supercategory']=str(lsit_super_class[name_index])
             # print(name, lsit_super_class[name_index])
@@ -98,7 +99,10 @@ def run(annotations_path, split_save_folder):
             del(category['id'])
             del(category['name'])
 
-            category['id']=category_id
+
+            category['id']=str(category_id)
+            if category_name == "background_in" or category_name == "background_out" :
+                category_name = "background"
             category['name']=category_name
 
 

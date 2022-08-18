@@ -28,7 +28,7 @@ import sys
 
 def save_coco(file, info, images, annotations, categories):
 
-    images['id']=0
+    images['id']="0"
     for annotation in annotations:
         annotation['image_id']=0
 

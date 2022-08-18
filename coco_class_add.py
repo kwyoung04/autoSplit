@@ -8,7 +8,7 @@ import pandas as pd
 
 import sys
 
-exel_path='/mnt/c/Users/Eric/Documents/src/koreaData/map/class_list4-1.xlsx'
+exel_path='/mnt/c/Users/Eric/Documents/src/koreaData/map/class_list4-2.xlsx'
 
 
 def run(annotations_path, split_save_folder):
@@ -52,7 +52,7 @@ def run(annotations_path, split_save_folder):
         return category
         
     with open(annotations_path, 'rt', encoding='UTF-8') as annotations:
-        print("annotations", annotations)
+        #print("annotations", annotations)
         coco = json.load(annotations)
         # info = coco['info']
         info=[{'description': '', 'version': "1.0", 'year': "2022"}]
@@ -76,10 +76,10 @@ def run(annotations_path, split_save_folder):
 
         set1=set(lsit_main_class)
         set2=set(names)
-        print(len(lsit_main_class),len(names))
+        #print(len(lsit_main_class),len(names))
         add_classes=set1.difference(set2)
-        print(" add_classes : ", add_classes)
-        print(len(add_classes))
+        #print(" add_classes : ", add_classes)
+        #print(len(add_classes))
 
         #for add_class in add_classes:
             # print(add_class)
@@ -106,18 +106,28 @@ def run(annotations_path, split_save_folder):
         for anno in annotations:
             anno_area = anno['area']
             anno_bbox = anno['bbox']
+            anno_segm = anno['segmentation']
 
             del(anno['area'])
             del(anno['bbox'])
+            del(anno['segmentation'])
 
             if 'iscrowd' in anno['attributes']:
                 anno['iscrowd']=int(anno['attributes']['iscrowd'])
+            else:
+                anno['iscrowd']=int(anno['attributes']['0'])
 
-            anno['bbox']=anno_bbox
-            anno['area']=anno_area
+            if(anno['iscrowd'] != 0 and anno['iscrowd'] != 1):
+                print("Iscrowd does not exist", annotations_path)
 
             del(anno['attributes'])
-            del(anno['segmentation'])
+            
+            anno['bbox']=anno_bbox
+
+            if anno_segm:
+                anno['segmentation']=anno_segm
+    
+            anno['area']=anno_area
 
         for image in images:
             del(image['license'])

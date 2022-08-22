@@ -8,7 +8,7 @@ import pandas as pd
 
 import sys
 
-exel_path='/mnt/c/Users/Eric/Documents/src/koreaData/map/class_list4-2.xlsx'
+exel_path='./class_list4_2.xlsx'
 
 
 def run(annotations_path, split_save_folder):
@@ -29,14 +29,15 @@ def run(annotations_path, split_save_folder):
     main_class=change_data['main']
     lsit_main_class=main_class.tolist()
     lsit_super_class=super_class.tolist()
-    # print(lsit_main_class)
+    #print(lsit_main_class)
 
     def class_add_save_coco(file, info, images, annotations, categories):
-        with open(file, 'wt', encoding='UTF-8') as coco:
+        with open(file, 'wt', encoding='UTF-8-sig') as coco:
             # json.dump({ 'info': info, 'licenses': licenses, 'images': images, 
             #     'annotations': annotations, 'categories': categories}, coco, indent=2, sort_keys=True)
-            json.dump({'info': info, 'categories': categories, 'images': images, 
-                'annotations': annotations}, coco, indent=2, sort_keys=False)
+
+            
+            json.dump({'info': info, 'categories': categories, 'images': images, 'annotations': annotations}, coco, indent=2, sort_keys=False, ensure_ascii = False)
 
 
     def filter_annotations(annotations, images):
@@ -51,11 +52,11 @@ def run(annotations_path, split_save_folder):
 
         return category
         
-    with open(annotations_path, 'rt', encoding='UTF-8') as annotations:
+    with open(annotations_path, 'rt', encoding='UTF-8-sig') as annotations:
         #print("annotations", annotations)
         coco = json.load(annotations)
         # info = coco['info']
-        info=[{'description': '', 'version': "1.0", 'year': "2022"}]
+        info=[{'description': coco['info']['description'], 'version': "1.0", 'year': "2022"}]
         # licenses = coco['licenses']
         images = coco['images']
         annotations = coco['annotations']
@@ -76,6 +77,7 @@ def run(annotations_path, split_save_folder):
 
         set1=set(lsit_main_class)
         set2=set(names)
+        #print(names)
         #print(len(lsit_main_class),len(names))
         add_classes=set1.difference(set2)
         #print(" add_classes : ", add_classes)
@@ -86,31 +88,44 @@ def run(annotations_path, split_save_folder):
             #categories.append(category_add(add_class,category_id))
             #category_id=category_id+1
 
+        matching_id=[]
         for category in categories:
+            old_id=category['id']
             name=category['name']
             
             name_index=lsit_main_class.index(str(name))
             category['supercategory']=str(lsit_super_class[name_index])
             # print(name, lsit_super_class[name_index])
 
-            category_id = category['id']
+            category_id=lsit_main_class.index(category['name'])
+            #category_id = category['id']
+            
             category_name = category['name']
-
+            #print(category['id'])
+            
             del(category['id'])
             del(category['name'])
 
 
-            category['id']=str(category_id)
             if category_name == "background_in" or category_name == "background_out" :
                 category_name = "background"
+                category_id = 161
+            string_stg = str(category_id+1)
+            #category['id']=string_stg.zfill(3)
+            
+            category['id']=string_stg
             category['name']=category_name
 
+            matching_id.append((old_id, string_stg))
 
+        #print( matching_id )
+        
         
         for anno in annotations:
             anno_area = anno['area']
             anno_bbox = anno['bbox']
             anno_segm = anno['segmentation']
+            anno_id = anno['category_id']
 
             del(anno['area'])
             del(anno['bbox'])
@@ -132,6 +147,8 @@ def run(annotations_path, split_save_folder):
                 anno['segmentation']=anno_segm
     
             anno['area']=anno_area
+            #print(anno_id, int(matching_id[104][1]))
+            anno['category_new_id'] = int(matching_id[anno_id-1][1])
 
         for image in images:
             del(image['license'])

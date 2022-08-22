@@ -26,15 +26,57 @@ import sys
 # ratio_valid = args.ratio_valid
 # ratio_test = args.ratio_test
 
+def cheak_abs_name(name_list):
+    for part_name in name_list:
+        if (part_name >= '0' and part_name <= '9999999' and len(part_name) == 7):
+          return part_name
+
+    return 0
+
+def cheak_class_ins_name(name_list):
+    for part_name in name_list:
+        tmp_split_name = part_name.split('.')
+        for tmp_part_name in tmp_split_name:
+            if not (part_name >= '0' and part_name <= '9999999'):
+                if not (part_name == 'jpg' or part_name == 'IMG' or part_name == 'VID'):
+                    return tmp_part_name
+    return 0
+
+
 def save_coco(file, info, images, annotations, categories):
+    with open(file, 'wt', encoding='UTF-8-sig') as coco:
+        image_name=images['file_name']
+        
+        name_list = image_name.split('_')
+        image_abs_name = cheak_abs_name(name_list)
+        if not image_abs_name:
+            print("## image name error")
 
-    images['id']="0"
-    for annotation in annotations:
-        annotation['image_id']=0
+        image_file_name = images['file_name']
+        get_instace=cheak_class_ins_name(image_file_name.split('_'))
+        
+        images['id'] = image_abs_name
+        images['file_name'] = "image/" + str(get_instace) + "/" + images['file_name']
 
-    with open(file, 'wt', encoding='UTF-8') as coco:
-        json.dump({ 'info': info, 'categories': categories, 'images': [images], 
-            'annotations': annotations}, coco, indent=2, sort_keys=False)
+        seen = []
+        numI = 0
+        new_categories=[]
+        for categorie in categories:
+            val = categorie['name']
+            if val not in seen:
+                seen.append(val)
+                new_categories.append(categorie)
+
+            numI = numI+1
+        
+        for annotation in annotations:
+            #print(annotation)
+            annotation['category_id'] = annotation['category_new_id']
+            
+            
+            del(annotation['category_new_id'])
+            annotation['image_id'] = int(image_abs_name)
+        json.dump({ 'info': info, 'categories': new_categories, 'images': [images], 'annotations': annotations}, coco, indent=2, sort_keys=False, ensure_ascii = False)
 
 def filter_annotations(annotations, images):
 
@@ -42,9 +84,9 @@ def filter_annotations(annotations, images):
     return funcy.lfilter(lambda a: int(a['image_id']) in image_ids, annotations)
 
 def main(annotations, split_save_folder):
-    with open(annotations, 'rt', encoding='UTF-8') as annotations:
+    with open(annotations, 'rt', encoding='UTF-8-sig') as annotations:
         coco = json.load(annotations)
-        info = coco['info']
+        info = coco['info'][0]
         # licenses = coco['licenses']
         images = coco['images']
         annotations = coco['annotations']
@@ -72,6 +114,7 @@ def main(annotations, split_save_folder):
             image_name=data['file_name'].replace('.jpg','.json')
             save_name=os.path.join(split_save_folder,image_name)
             save_data = filter_annotations(annotations, [data])
+       
 
             split_data=[]
             for split_categories in save_data:
@@ -108,6 +151,7 @@ if __name__ == "__main__":
     if basename != "0st.json":
         exit()
     #test = annotations.split('/')
+    
     
     splitSavePath = abspath.split('/')
     splitSavePath = '/'.join(splitSavePath[:-2]) +"/split"

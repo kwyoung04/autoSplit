@@ -56,7 +56,8 @@ def save_coco(file, info, images, annotations, categories):
         get_instace=cheak_class_ins_name(image_file_name.split('_'))
         
         images['id'] = image_abs_name
-        images['file_name'] = "image/" + str(get_instace) + "/" + images['file_name']
+        #images['file_name'] = "image/" + str(get_instace) + "/" + images['file_name']
+        images['file_name'] = images['file_name']
 
         seen = []
         numI = 0
@@ -68,9 +69,11 @@ def save_coco(file, info, images, annotations, categories):
                 new_categories.append(categorie)
 
             numI = numI+1
-        
+
         for annotation in annotations:
-            #print(annotation)
+            if annotation['image_id'] == 100:
+                print("####")
+                print(annotations)
             annotation['category_id'] = annotation['category_new_id']
             
             
@@ -142,7 +145,8 @@ def createFolder(directory):
 
 
 if __name__ == "__main__":
-    argument = sys.argv[1]
+    #argument = sys.argv[1]
+    argument = "./data/task_set1-2022_08_01_14_49_41-coco 1.0/annotations/0st.json"
 
     basename = os.path.basename(argument)
     abspath = os.path.abspath(argument)

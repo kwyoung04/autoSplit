@@ -17,7 +17,8 @@ def run(jsonPath, splitSavePath):
         
         while (i < lenAn):
             try:
-                del(annotations[i]['segmentation'])
+                #del(annotations[i]['segmentation'])
+                annotations[i]['segmentation'] = []
             except KeyError:
                 pass
 

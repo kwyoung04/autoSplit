@@ -145,8 +145,8 @@ def createFolder(directory):
 
 
 if __name__ == "__main__":
-    #argument = sys.argv[1]
-    argument = "./data/task_set1-2022_08_01_14_49_41-coco 1.0/annotations/0st.json"
+    argument = sys.argv[1]
+    #argument = "./data/task_set1-2022_08_01_14_49_41-coco 1.0/annotations/0st.json"
 
     basename = os.path.basename(argument)
     abspath = os.path.abspath(argument)

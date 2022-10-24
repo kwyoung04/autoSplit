@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 import os 
 import xlrd
 import pandas as pd
+import re
 
 import sys
 
@@ -26,11 +27,13 @@ import sys
 # ratio_valid = args.ratio_valid
 # ratio_test = args.ratio_test
 
+
+MAIN_CAT = 0
+
 def cheak_abs_name(name_list):
     for part_name in name_list:
         if (part_name >= '0' and part_name <= '9999999' and len(part_name) == 7):
           return part_name
-
     return 0
 
 def cheak_class_ins_name(name_list):
@@ -40,6 +43,10 @@ def cheak_class_ins_name(name_list):
             if not (part_name >= '0' and part_name <= '9999999'):
                 if not (part_name == 'jpg' or part_name == 'IMG' or part_name == 'VID'):
                     return tmp_part_name
+    return 0
+
+
+def cheak_mainCat_name(name_list):
     return 0
 
 
@@ -53,13 +60,19 @@ def save_coco(file, info, images, annotations, categories):
             print("## image name error")
 
         image_file_name = images['file_name']
-        get_instace=cheak_class_ins_name(image_file_name.split('_'))
+        get_instace = cheak_class_ins_name(image_file_name.split('_'))
+        
+        items = re.findall('\(([^)]+)', image_file_name)
+        if not items:
+            items=[get_instace]
         
         images['id'] = image_abs_name
         #images['file_name'] = "image/" + str(get_instace) + "/" + images['file_name']
-        images['file_name'] = images['file_name']
+        
+        main_category=dict()
+        main_category['instance'] = items[0]
 
-        seen = []
+        seen = ["pillar", "sky", "tree", "background", "pavement"]
         numI = 0
         new_categories=[]
         for categorie in categories:
@@ -69,17 +82,25 @@ def save_coco(file, info, images, annotations, categories):
                 new_categories.append(categorie)
 
             numI = numI+1
+        len_anno = len(annotations)
+        i=0
+        del_id = [154, 157, 158, 161, 162]
 
-        for annotation in annotations:
-            if annotation['image_id'] == 100:
-                print("####")
-                print(annotations)
-            annotation['category_id'] = annotation['category_new_id']
+        while i < len_anno:
+            if annotations[i]['category_new_id'] in del_id:
+                len_anno=len_anno-1
+                del annotations[i]
+                continue
             
-            
-            del(annotation['category_new_id'])
-            annotation['image_id'] = int(image_abs_name)
-        json.dump({ 'info': info, 'categories': new_categories, 'images': [images], 'annotations': annotations}, coco, indent=2, sort_keys=False, ensure_ascii = False)
+            annotations[i]['category_id'] = annotations[i]['category_new_id']
+            del(annotations[i]['category_new_id'])
+            annotations[i]['image_id'] = int(image_abs_name)
+            i=i+1
+
+        if MAIN_CAT:
+            json.dump({ 'info': info, 'main_category': main_category, 'categories': new_categories, 'images': [images], 'annotations': annotations}, coco, indent=2, sort_keys=False, ensure_ascii = False)
+        else:
+            json.dump({ 'info': info, 'categories': new_categories, 'images': [images], 'annotations': annotations}, coco, indent=2, sort_keys=False, ensure_ascii = False)
 
 def filter_annotations(annotations, images):
 
@@ -146,7 +167,7 @@ def createFolder(directory):
 
 if __name__ == "__main__":
     argument = sys.argv[1]
-    #argument = "./data/task_set1-2022_08_01_14_49_41-coco 1.0/annotations/0st.json"
+    #argument = "/mnt/c/Users/Eric/Documents/src/koreaData/bbox_split/autoSplit/data/task_036_3_017(411)_polygon(완)-2022_09_02_15_55_34-coco 1.0/annotations/0st.json"
 
     basename = os.path.basename(argument)
     abspath = os.path.abspath(argument)

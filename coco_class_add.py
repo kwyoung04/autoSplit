@@ -9,7 +9,8 @@ import pandas as pd
 import sys
 
 exel_path='./class_list4_2.xlsx'
-
+del_cat = ["pillar", "background_in", "sky", "tree", "background_out", "pavement"]
+del_id = [154, 155, 158, 159, 161]
 
 def run(annotations_path, split_save_folder):
     i=0
@@ -101,13 +102,20 @@ def run(annotations_path, split_save_folder):
             #category_id = category['id']
             
             category_name = category['name']
+           
+          
             #print(category['id'])
-            
+
             del(category['id'])
             del(category['name'])
 
 
-            if category_name == "background_in" or category_name == "background_out" :
+            if category_name == "road":
+                category_id = 155
+            elif category_name == "building":
+                category_id = 159
+
+            elif category_name == "background_in" or category_name == "background_out" :
                 category_name = "background"
                 category_id = 161
             string_stg = str(category_id+1)
@@ -126,6 +134,9 @@ def run(annotations_path, split_save_folder):
             anno_bbox = anno['bbox']
             anno_segm = anno['segmentation']
             anno_id = anno['category_id']
+
+            #if anno_id in del_id:
+            #    continue                
 
             del(anno['area'])
             del(anno['bbox'])
@@ -169,7 +180,8 @@ def run(annotations_path, split_save_folder):
 
 if __name__ == "__main__":
     argument = sys.argv[1]
-
+    #argument = "/mnt/c/Users/Eric/Documents/src/koreaData/bbox_split/autoSplit/data/task_036_3_017(411)_polygon(완)-2022_09_02_15_55_34-coco 1.0/annotations/instances_default.json"
+    
     basename = os.path.basename(argument)
     abspath = os.path.abspath(argument)
     

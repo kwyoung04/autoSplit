@@ -70,7 +70,7 @@ def save_coco(file, info, images, annotations, categories):
         #images['file_name'] = "image/" + str(get_instace) + "/" + images['file_name']
         
         main_category=dict()
-        main_category['instance'] = items[0]
+        info['main_category'] = items[0]
 
         seen = ["pillar", "sky", "tree", "background", "pavement"]
         numI = 0
@@ -96,6 +96,7 @@ def save_coco(file, info, images, annotations, categories):
             del(annotations[i]['category_new_id'])
             annotations[i]['image_id'] = int(image_abs_name)
             i=i+1
+
 
         if MAIN_CAT:
             json.dump({ 'info': info, 'main_category': main_category, 'categories': new_categories, 'images': [images], 'annotations': annotations}, coco, indent=2, sort_keys=False, ensure_ascii = False)

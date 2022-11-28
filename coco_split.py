@@ -28,7 +28,7 @@ import sys
 # ratio_test = args.ratio_test
 
 
-MAIN_CAT = 1
+MAIN_CAT = 0
 
 def cheak_abs_name(name_list):
     for part_name in name_list:

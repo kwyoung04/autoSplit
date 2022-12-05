@@ -28,7 +28,7 @@ import sys
 # ratio_test = args.ratio_test
 
 
-MAIN_CAT = 1
+MAIN_CAT = 0
 
 def cheak_abs_name(name_list):
     for part_name in name_list:
@@ -61,10 +61,14 @@ def save_coco(file, info, images, annotations, categories):
 
         image_file_name = images['file_name']
         get_instace = cheak_class_ins_name(image_file_name.split('_'))
+
         
-        items = re.findall('\(([^)]+)', image_file_name)
-        if not items:
-            items=[get_instace]
+        ##items = re.findall('\(([^)]+)', image_file_name)   ## ()
+        ##items = re.findall('\_([^()]+)', image_file_name) ## _(
+
+        objt = get_instace.split('(')[0]        
+                    
+        items=[objt]
         
         images['id'] = image_abs_name
         #images['file_name'] = "image/" + str(get_instace) + "/" + images['file_name']

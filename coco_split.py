@@ -58,9 +58,17 @@ def save_coco(file, info, images, annotations, categories):
         image_abs_name = cheak_abs_name(name_list)
         if not image_abs_name:
             print("## image name error")
+        
+        nameLen = len(name_list)
+        
+        if nameLen > 3:
+            i = nameLen-1
+            while i > 1:
+                name_list[i-1] = name_list[i-1] + "_" + name_list[i] 
+                i = i-1
 
-        image_file_name = images['file_name']
-        get_instace = cheak_class_ins_name(image_file_name.split('_'))
+    
+        get_instace = cheak_class_ins_name(name_list)
 
         
         ##items = re.findall('\(([^)]+)', image_file_name)   ## ()

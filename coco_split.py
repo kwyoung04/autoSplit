@@ -140,26 +140,32 @@ def main(annotations, split_save_folder):
         #     images, test_size=ratio_test)
 
         # ratio_remaining = 1 - ratio_test
+        
+        
         # ratio_valid_adjusted = ratio_valid / ratio_remaining
 
         # train_after, valid = train_test_split(
         #     train_before, test_size=ratio_valid_adjusted)
- 
 
+    
         for data in images:
             #print(data)
             image_name=data['file_name'].replace('.jpg','.json')
             save_name=os.path.join(split_save_folder,image_name)
             save_data = filter_annotations(annotations, [data])
-       
-
+        
+        
             split_data=[]
             for split_categories in save_data:
-                split_data.append(split_categories['category_id'])
+                split_data.append(split_categories['category_new_id'])
       
-            new_categories=[]           
+            new_categories=[]        
             for split_id in split_data:
-                new_categories.append(categories[split_id - 1])
+                for i in range(len(categories)):
+                    if (split_id - 1) == int(categories[i]['id']):
+                        new_categories.append(categories[i])
+                        break
+                        
 
             save_coco(save_name, info, data, save_data, new_categories)
 

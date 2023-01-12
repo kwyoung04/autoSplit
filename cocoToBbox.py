@@ -6,7 +6,8 @@ import os
 import sys
 
 #STUFF_LIST = {151, 152, 153, 154, 156, 157, 158, 159, 160, 155, 161}
-STUFF_LIST = {161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151}
+#STUFF_LIST = {162, 161, 160, 158, 157, 156, 155, 154, 153, 152, 151}
+STUFF_LIST = {152, 153, 154, 155, 156, 157, 145, 158, 98, 99, 100}
 
 
 def run(jsonPath, splitSavePath):
@@ -22,7 +23,6 @@ def run(jsonPath, splitSavePath):
                 annotations[i]['segmentation'] = []
             except KeyError:
                 pass
-
             if annotations[i]['category_id'] in STUFF_LIST:
                 del(annotations[i])
                 lenAn = lenAn -1
@@ -32,9 +32,17 @@ def run(jsonPath, splitSavePath):
 
 
         coco['annotations'] = annotations
-        
-        for stuff in STUFF_LIST:
-            del(coco['categories'][150])
+        del(coco['categories'][158-1])
+        del(coco['categories'][157-1])
+        del(coco['categories'][156-1])
+        del(coco['categories'][155-1])
+        del(coco['categories'][154-1])
+        del(coco['categories'][153-1])
+        del(coco['categories'][152-1])
+        del(coco['categories'][145-1])
+        del(coco['categories'][100-1])
+        del(coco['categories'][99-1])
+        del(coco['categories'][98-1])
 
 
     save_coco(splitSavePath, coco)

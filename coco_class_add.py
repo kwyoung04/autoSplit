@@ -32,6 +32,22 @@ def run(annotations_path, split_save_folder):
     lsit_super_class=super_class.tolist()
     #print(lsit_main_class)
 
+    def binary_search_recursion(target, start, end, data):
+        if start > end:
+            return None
+
+        mid = (start + end) // 2
+
+        if data[mid][0] == target:
+            return mid
+        elif data[mid][0] > target:
+            end = mid - 1
+        else:
+            start = mid + 1        
+
+        return binary_search_recursion(target, start, end, data)
+
+
     def class_add_save_coco(file, info, images, annotations, categories):
         with open(file, 'wt', encoding='UTF-8-sig') as coco:
             # json.dump({ 'info': info, 'licenses': licenses, 'images': images, 
@@ -158,8 +174,8 @@ def run(annotations_path, split_save_folder):
                 anno['segmentation']=anno_segm
     
             anno['area']=anno_area
-            #print(anno_id, int(matching_id[104][1]))
-            anno['category_new_id'] = int(matching_id[anno_id-1][1])
+            get_id = binary_search_recursion(anno_id-1, 0, len(matching_id), matching_id)
+            anno['category_new_id'] = int(get_id)
 
         for image in images:
             del(image['license'])
@@ -185,7 +201,7 @@ if __name__ == "__main__":
     basename = os.path.basename(argument)
     abspath = os.path.abspath(argument)
     
-    if basename != "instances_default.json":
+    if basename != "instances_default_bbox.json":
         exit()
     #test = annotations.split('/')
     

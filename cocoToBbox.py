@@ -7,7 +7,10 @@ import sys
 
 #STUFF_LIST = {151, 152, 153, 154, 156, 157, 158, 159, 160, 155, 161}
 #STUFF_LIST = {161, 160, 159, 158, 157, 156, 155, 154, 153, 152, 151}
-STUFF_LIST = [152, 153, 154, 155, 156, 157, 145, 158, 98, 99, 100]
+#STUFF_LIST = [152, 153, 154, 155, 156, 157, 145, 158, 98, 99, 100]
+
+STUFF_NAME_LIST = ["ceiling", "floor", "wall", "pillar", "background_in", "road", "pavement", "sky", "tree", "building", "background_out"]
+STUFF_LIST=[]
 
 def run(jsonPath, splitSavePath):
     with open(jsonPath, 'rt', encoding='UTF-8-sig') as data:
@@ -24,8 +27,8 @@ def run(jsonPath, splitSavePath):
         i = 0
         cnt = 0
         while (i < lenCat):
-            if coco['categories'][i]['id'] in STUFF_LIST:
-                #print("del stuff:", coco['categories'][i])
+            if coco['categories'][i]['name'] in STUFF_NAME_LIST:
+                STUFF_LIST.append(coco['categories'][i]['id'])
                 del(coco['categories'][i])
                 cnt += 1
                 lenCat -=1

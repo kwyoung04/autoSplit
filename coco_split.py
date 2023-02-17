@@ -96,7 +96,7 @@ def save_coco(file, info, images, annotations, categories):
             numI = numI+1
         len_anno = len(annotations)
         i=0
-        del_id = [154, 157, 158, 161, 162]
+        del_id = [154, 157, 158, 161]
 
         while i < len_anno:
             if annotations[i]['category_new_id'] in del_id:
